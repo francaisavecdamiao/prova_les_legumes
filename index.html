@@ -96,6 +96,20 @@
     white-space: nowrap; flex-shrink:0;
   }
   .score-max{ font-weight:600; opacity:.7; font-size:12px; }
+  .restart-btn{
+    background: var(--bg); border: 2px solid var(--border);
+    color: var(--text-light); border-radius: 999px;
+    width: 28px; height: 28px; font-size: 15px; line-height: 1;
+    cursor: pointer; flex-shrink: 0; padding: 0; margin-left: auto;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .restart-btn:active{ transform: scale(.9); }
+  .resume-note{
+    font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px;
+    color: var(--green-correct-dark); background: #EFFAEC;
+    border-radius: 999px; padding: 6px 12px; text-align: center;
+    margin: 0 auto 4px; display: block;
+  }
   .progress-track{ background: var(--border); border-radius: 999px; height: 12px; overflow:hidden; }
   .progress-fill{
     height:100%;
@@ -627,6 +641,61 @@ const state = {
 
 const TOTAL_Q = ACTS.reduce((a,c)=>a+c.data.length,0);
 
+/* =========================================================
+   PERSISTENCIA — continua de onde parou ao recarregar
+   ========================================================= */
+const SAVE_KEY = 'galolingo_legumes_v1';
+let resumed = false;
+
+function saveState(){
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      v: 1,
+      screen: state.screen,
+      act: state.act,
+      qIndex: state.qIndex,
+      totalScore: state.totalScore,
+      actScores: state.actScores,
+      audioSpeed: state.audioSpeed,
+      q: state.q
+    }));
+  }catch(e){}
+}
+
+function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
+
+function loadState(){
+  let raw = null;
+  try{ raw = localStorage.getItem(SAVE_KEY); }catch(e){ return; }
+  if(!raw) return;
+  let d;
+  try{ d = JSON.parse(raw); }catch(e){ clearSave(); return; }
+  if(!d || d.v !== 1){ clearSave(); return; }
+  if(['home','intro','game','actComplete','final'].indexOf(d.screen) === -1){ clearSave(); return; }
+  if(typeof d.act !== 'number' || d.act < 0 || d.act >= ACTS.length){ clearSave(); return; }
+  state.screen = d.screen;
+  state.act = d.act;
+  state.totalScore = (typeof d.totalScore === 'number' && isFinite(d.totalScore)) ? d.totalScore : 0;
+  state.actScores = (Array.isArray(d.actScores) && d.actScores.length === ACTS.length) ? d.actScores : [0,0,0,0,0,0,0];
+  state.audioSpeed = (typeof d.audioSpeed === 'number' && d.audioSpeed >= 0.5 && d.audioSpeed <= 1.5) ? d.audioSpeed : 1;
+  const maxQ = ACTS[state.act].data.length;
+  state.qIndex = (typeof d.qIndex === 'number' && d.qIndex >= 0 && d.qIndex < maxQ) ? d.qIndex : 0;
+  state.q = d.q || null;
+  if(state.q && state.q.listening) state.q.listening = false;
+  if(state.screen === 'game' && !state.q) setupQuestion();
+  if(state.screen !== 'home') resumed = true;
+}
+
+function restartAll(){
+  if(!confirm('Reiniciar a prova? Todo o progresso e a pontuacao serao apagados.')) return;
+  clearSave();
+  playSound('click');
+  resumed = false;
+  state.screen='home'; state.act=0; state.qIndex=0;
+  state.totalScore=0; state.actScores=[0,0,0,0,0,0,0]; state.q=null;
+  render();
+}
+
 function shuffle(arr){
   const a = [...arr];
   for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
@@ -681,6 +750,7 @@ function updateAudioSpeed(val){
   state.audioSpeed = parseFloat(val);
   const el = document.getElementById('speed-val');
   if(el) el.innerText = state.audioSpeed.toFixed(1) + 'x';
+  saveState();
 }
 function renderAudioControls(text, label){
   return `
@@ -753,13 +823,16 @@ function afterAct(){
 }
 function resetGame(){
   playSound('click');
+  clearSave();
+  resumed = false;
   state.screen='home'; state.act=0; state.qIndex=0;
-  state.totalScore=0; state.actScores=[0,0,0,0,0,0,0];
+  state.totalScore=0; state.actScores=[0,0,0,0,0,0,0]; state.q=null;
   render();
 }
 function addPoints(p){
   state.totalScore += p;
   state.actScores[state.act] += p;
+  saveState();
 }
 
 /* =========================================================
@@ -774,6 +847,7 @@ function render(){
   else if(state.screen==='game'){ renderQuestion(); }
   else if(state.screen==='actComplete'){ c.innerHTML = actCompleteTemplate(); }
   else { c.innerHTML = finalTemplate(); }
+  saveState();
 }
 
 function renderTopbar(){
@@ -798,9 +872,12 @@ function renderTopbar(){
   } else {
     label = 'pronto para começar?';
   }
+  const restartBtn = (state.screen==='home') ? ''
+    : `<button class="restart-btn" title="reiniciar a prova" onclick="restartAll()">&#8634;</button>`;
   bar.innerHTML = `
     <div class="topbar-row">
       <span class="level-label">${label}</span>
+      ${restartBtn}
       <span class="score-badge">🏆 ${formatScore(state.totalScore)}<span class="score-max">/100</span></span>
     </div>
     <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>`;
@@ -1080,6 +1157,7 @@ function setupQuestion(){
   else setupAct7();
 }
 function renderQuestion(){
+  saveState();
   const n = currentAct().n;
   if(n===1) renderAct1();
   else if(n===2) renderAct2();
@@ -1636,7 +1714,16 @@ function renderAct7(){
 /* =========================================================
    INÍCIO
    ========================================================= */
+loadState();
 render();
+if(resumed){
+  const note = document.createElement('div');
+  note.className = 'resume-note';
+  note.textContent = 'progresso retomado de onde você parou';
+  const c = document.getElementById('content');
+  c.insertBefore(note, c.firstChild);
+  setTimeout(()=>{ if(note.parentNode) note.remove(); }, 4000);
+}
 </script>
 <script data-pplx-inline-edit>
 (function () {
