@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#F7F9FA">
+<title>GALOLINGO — LES LÉGUMES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'Feather Bold';
+    src: url('fonts/Feather-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  html{ color-scheme: light only; }
+
+  :root{
+    color-scheme: light only;
+    --rosa: #F2A7AD;
+    --laranja-escuro: #EF7211;
+    --azul-claro: #C2EDF2;
+    --amarelo: #F2A444;
+    --laranja-salmao: #F2B28D;
+    --vermelho: #D93636;
+
+    --laranja-dark: #C95C08;
+    --vermelho-dark: #B02626;
+    --azul-dark: #8EC2C9;
+    --green-correct: #48B832;
+    --green-correct-dark: #379425;
+
+    --text: #3C3C3C;
+    --text-light: #6b7280;
+    --bg: #F7F9FA;
+    --card: #FFFFFF;
+    --border: #E5E5E5;
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+  }
+
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html,body{
+    margin:0; padding:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+  }
+
+  h1, h2, .level-label, .score-badge, .btn, .chip-num, .chip-pts, .final-score,
+  .fr-sentence, .pt-sentence, .letter-box, .audio-btn, .slot-word, .mic-btn {
+    font-family: 'Feather Bold', 'Nunito', sans-serif;
+  }
+
+  #page{
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: var(--bg);
+    display:flex;
+    flex-direction: column;
+    box-shadow: 0 0 40px rgba(0,0,0,0.06);
+  }
+
+  /* TOPBAR */
+  #topbar{
+    position: sticky; top:0; z-index: 10;
+    background: var(--card);
+    border-bottom: 2px solid var(--border);
+    padding: 10px 16px 12px;
+  }
+  .topbar-row{
+    display:flex; align-items:center; justify-content: space-between;
+    gap:10px; margin-bottom:8px;
+  }
+  .level-label{
+    font-size: 15px; color: var(--text);
+    white-space: nowrap; overflow:hidden; text-overflow: ellipsis;
+    text-transform: lowercase;
+  }
+  .score-badge{
+    font-size: 15px;
+    background: #FFF5EA;
+    color: var(--laranja-escuro);
+    border: 2px solid var(--amarelo);
+    border-radius: 999px;
+    padding: 4px 12px;
+    white-space: nowrap; flex-shrink:0;
+  }
+  .score-max{ font-weight:600; opacity:.7; font-size:12px; }
+  .progress-track{ background: var(--border); border-radius: 999px; height: 12px; overflow:hidden; }
+  .progress-fill{
+    height:100%;
+    background: linear-gradient(90deg, var(--amarelo), var(--laranja-escuro));
+    border-radius: 999px; transition: width .4s ease;
+  }
+
+  main#content{
+    flex:1; padding: 20px 16px 12px;
+    display:flex; flex-direction:column; gap:16px;
+  }
+
+  /* TEXTO BRANCO GARANTIDO */
+  .btn, .option-card, .chip-option, .audio-btn, .letter-tile,
+  .letter-box.filled, .letter-box.correct, .letter-box.wrong,
+  .blank-filled, .blank-correct, .blank-wrong, .chip-num,
+  .option-card.selected, .chip-option.selected,
+  .option-card.correct, .chip-option.correct,
+  .option-card.wrong, .chip-option.wrong,
+  .slot-word, .mic-btn, .word-tile {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+
+  .btn{
+    font-size: 18px; letter-spacing: .3px; text-transform: lowercase;
+    border: none; border-radius: 16px; padding: 15px 20px; cursor: pointer;
+    color: #ffffff !important;
+    background: var(--laranja-escuro);
+    box-shadow: 0 5px 0 var(--laranja-dark);
+    transition: transform .05s ease, box-shadow .05s ease, opacity .2s ease;
+  }
+  .btn:active:not(:disabled){ transform: translateY(4px); box-shadow: 0 1px 0 transparent; }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+  .btn-block{ width:100%; margin-top:auto; position: sticky; bottom: 16px; z-index: 5; }
+  .btn-ghost{
+    background: #ffffff; color: var(--laranja-escuro) !important;
+    -webkit-text-fill-color: var(--laranja-escuro) !important;
+    border: 2px solid var(--amarelo); box-shadow: 0 4px 0 #EEDCC4;
+    font-size: 15px; padding: 11px 16px; width:100%;
+  }
+
+  .footer-space{ flex:1; }
+
+  /* HOME / RESULTADOS */
+  .home-card{
+    background: var(--card); border: 2px solid var(--border);
+    border-radius: var(--radius-lg); padding: 26px 20px;
+    text-align:center; display:flex; flex-direction:column;
+    align-items:center; gap:10px; animation: popIn .35s ease;
+  }
+  .mascot-img{ width: 110px; height: 110px; object-fit: contain; margin-bottom: 4px; }
+  .home-card h1{ font-size: 24px; color: var(--text); text-transform: lowercase; margin: 0; }
+  .home-sub{ font-size:15px; color: var(--text-light); margin:0; line-height:1.5; }
+  .level-preview{ width:100%; display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+  .level-chip{
+    display:flex; align-items:center; gap:10px;
+    background: var(--bg); border: 2px solid var(--border);
+    border-radius: var(--radius-md); padding: 9px 12px;
+    font-weight:700; font-size:13px; text-align:left;
+  }
+  .chip-num{
+    background: var(--rosa); color:#ffffff !important;
+    width:26px; height:26px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; font-size: 13px;
+  }
+  .chip-pts{ margin-left:auto; color: var(--laranja-escuro); white-space:nowrap; }
+
+  .final-score{ font-size: 44px; color: var(--laranja-escuro); margin: 4px 0; }
+  .final-score span{ font-size:18px; color: var(--text-light); font-weight:700; }
+  .breakdown{ width:100%; margin-top:12px; display:flex; flex-direction:column; gap:7px; }
+  .breakdown-row{
+    display:flex; justify-content:space-between; gap:8px;
+    background: var(--bg); border-radius: var(--radius-sm);
+    padding: 9px 12px; font-weight:700; font-size:13px; text-align:left;
+  }
+
+  /* CARDS DE QUESTÕES */
+  .question-card{
+    background: var(--card); border: 2px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px 16px;
+    animation: popIn .3s ease;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+  }
+  .instruction{
+    font-size:13px; text-transform: uppercase; letter-spacing: .5px;
+    color: var(--text-light); font-weight:700; margin:0 0 12px;
+    width: 100%; text-align: center;
+  }
+  .fr-sentence{
+    font-size: 19px; color: var(--text); line-height: 1.7;
+    margin: 4px 0 16px; width: 100%; text-align: center;
+  }
+  .pt-sentence{
+    font-size: 17px; color: var(--text); line-height: 1.5;
+    margin: 0 0 16px; background: #F0FAFC;
+    border-left: 4px solid var(--azul-dark);
+    padding: 12px 14px; border-radius: 8px; width: 100%; text-align: center;
+  }
+
+  /* ÁUDIO */
+  .audio-controls{
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    background: #FFF8F5; border: 2px solid var(--laranja-salmao);
+    border-radius: var(--radius-md); padding: 10px 12px;
+    margin-bottom: 16px; width: 100%;
+  }
+  .audio-btn{
+    background: var(--laranja-escuro); color: #ffffff !important;
+    border: none; border-radius: 12px; padding: 8px 12px;
+    font-size: 14px; cursor: pointer; box-shadow: 0 3px 0 var(--laranja-dark);
+    display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+  }
+  .audio-btn:active{ transform: translateY(2px); box-shadow: 0 1px 0 transparent; }
+  .speed-control{ display: flex; flex-direction: column; gap: 2px; flex: 1; max-width: 150px; }
+  .speed-label{
+    font-size: 11px; font-weight: 800; color: var(--text-light);
+    text-transform: uppercase; display: flex; justify-content: space-between;
+  }
+  .speed-slider{ width: 100%; accent-color: var(--laranja-escuro); cursor: pointer; }
+
+  /* OPÇÕES */
+  .options-grid{ display:flex; flex-direction:column; gap:10px; width: 100%; }
+  .option-card{
+    font-family:'Nunito', sans-serif; font-weight:700; font-size: 15px;
+    text-align:center; background: var(--laranja-escuro);
+    border: 2px solid var(--laranja-dark); border-bottom-width:4px;
+    border-radius: var(--radius-md); padding: 13px 14px;
+    color: #ffffff !important; cursor:pointer; transition: all .12s ease; width: 100%;
+  }
+  .option-card:hover:not(:disabled){ background: var(--laranja-dark); }
+  .option-card.selected{ background: var(--laranja-salmao); }
+  .option-card.correct{ border-color: var(--green-correct-dark); background: var(--green-correct); }
+  .option-card.wrong{ border-color: var(--vermelho-dark); background: var(--vermelho); }
+  .option-card:disabled{ cursor:default; }
+
+  /* LACUNAS */
+  .blank{
+    display:inline-block; min-width: 52px; text-align:center;
+    padding: 2px 10px; margin: 0 2px; border-radius: 8px;
+    background: #EEE; color: var(--text-light); font-weight:800;
+    border-bottom: 3px solid #CCC;
+  }
+  .blank-filled{ background: var(--laranja-escuro); border-bottom-color: var(--laranja-dark); }
+  .blank-correct{ background: var(--green-correct); border-bottom-color: var(--green-correct-dark); }
+  .blank-wrong{ background: var(--vermelho); border-bottom-color: var(--vermelho-dark); }
+  .blank-num{
+    display:inline-block; font-size:11px; font-weight:800;
+    background: var(--azul-claro); color: var(--text);
+    border-radius: 6px; padding: 1px 5px; margin-right: 3px; vertical-align: middle;
+  }
+
+  .chip-label{
+    font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.4px;
+    color: var(--text-light); margin: 14px 0 8px; width: 100%; text-align: left;
+  }
+  .chip-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; width: 100%; }
+  .chip-option{
+    font-family:'Nunito', sans-serif; font-weight:700; font-size: 14px;
+    background: var(--laranja-escuro); border: 2px solid var(--laranja-dark);
+    border-bottom-width:4px; border-radius: 999px; padding: 9px 15px;
+    cursor:pointer; color: #ffffff !important; transition: all .12s ease;
+  }
+  .chip-option.selected{ background: var(--laranja-salmao); }
+  .chip-option.correct{ border-color: var(--green-correct-dark); background: var(--green-correct); }
+  .chip-option.wrong{ border-color: var(--vermelho-dark); background: var(--vermelho); }
+
+  /* MONTAGEM DE FRASE */
+  .answer-area{
+    width:100%; min-height: 62px;
+    display:flex; flex-wrap:wrap; align-items:flex-start; align-content:flex-start;
+    justify-content:center; gap:6px;
+    background: #F3F4F6; border: 2px dashed #D1D5DB;
+    border-radius: 14px; padding: 10px 8px; margin-bottom: 6px;
+  }
+  .answer-area.correct{ background: #EFFAEC; border-color: var(--green-correct); border-style: solid; }
+  .answer-area.wrong{ background: #FDF0F0; border-color: var(--vermelho); border-style: solid; }
+  .answer-placeholder{ font-size:13px; color:#9CA3AF; font-weight:700; padding: 8px 0; }
+  .slot-word{
+    font-size: 14px; background: var(--laranja-escuro);
+    border: 2px solid var(--laranja-dark); border-bottom-width: 3px;
+    border-radius: 999px; padding: 6px 12px; cursor:pointer;
+  }
+  .word-tile{
+    font-family:'Nunito', sans-serif; font-weight:700; font-size: 14px;
+    background: var(--laranja-escuro); border: 2px solid var(--laranja-dark);
+    border-bottom-width:4px; border-radius: 999px; padding: 8px 14px;
+    cursor:pointer; color:#ffffff !important; transition: transform .08s ease;
+  }
+  .word-tile:active{ transform: scale(.93); }
+  .word-tile.disabled{ opacity:.22; pointer-events:none; }
+
+  /* LETRAS */
+  .word-target-box{
+    display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 3px;
+    background: #F3F4F6; border: 2px dashed #D1D5DB;
+    padding: 6px; border-radius: 12px; vertical-align: middle;
+    margin: 0 4px; max-width: 100%;
+  }
+  .letter-box{
+    width: 26px; height: 32px; background: #E5E7EB;
+    border: 2px solid #D1D5DB; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800; color: var(--text);
+    cursor: pointer; user-select: none; transition: all .15s ease;
+  }
+  .letter-box.space{ width: 14px; background: transparent; border-color: transparent; }
+  .letter-box.filled{ background: var(--laranja-escuro); border-color: var(--laranja-dark); }
+  .letter-box.correct{ background: var(--green-correct); border-color: var(--green-correct-dark); }
+  .letter-box.wrong{ background: var(--vermelho); border-color: var(--vermelho-dark); }
+  .letter-tile{
+    font-family: 'Feather Bold', 'Nunito', sans-serif; font-size: 15px;
+    background: var(--laranja-escuro); border: 2px solid var(--laranja-dark);
+    border-bottom-width: 4px; border-radius: 999px;
+    min-width: 34px; height: 36px; padding: 0 8px; cursor: pointer;
+    color: #ffffff !important; display: flex; align-items: center; justify-content: center;
+    transition: transform .08s ease;
+  }
+  .letter-tile:active{ transform: scale(0.92); }
+  .letter-tile.disabled{ opacity: 0.25; cursor: default; pointer-events: none; }
+
+  .gabarito{
+    font-size: 13px; color: var(--vermelho-dark); background: #FDF0F0;
+    border-radius: var(--radius-sm); padding: 8px 12px; margin: 12px 0 0;
+    width: 100%; text-align: center; line-height:1.5;
+  }
+  .gabarito.ok{ color: var(--green-correct-dark); background: #EFFAEC; }
+
+  /* MICROFONE */
+  .mic-btn{
+    background: var(--vermelho); border: none; border-radius: 999px;
+    width: 92px; height: 92px; font-size: 38px; cursor: pointer;
+    box-shadow: 0 5px 0 var(--vermelho-dark);
+    display:flex; align-items:center; justify-content:center; margin: 6px auto 10px;
+  }
+  .mic-btn:active:not(:disabled){ transform: translateY(4px); box-shadow: 0 1px 0 transparent; }
+  .mic-btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .mic-btn.listening{ animation: pulse 1s infinite; background: var(--green-correct); box-shadow: 0 5px 0 var(--green-correct-dark); }
+  @keyframes pulse{ 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+  .chances{
+    display:flex; gap:6px; justify-content:center; align-items:center;
+    font-size:12px; font-weight:800; text-transform:uppercase;
+    color: var(--text-light); margin-bottom: 6px;
+  }
+  .heart{ font-size:16px; }
+  .heart.used{ filter: grayscale(1); opacity:.35; }
+  .transcript-box{
+    width:100%; background:#F3F4F6; border:2px solid var(--border);
+    border-radius: 12px; padding: 10px 12px; margin-top: 10px;
+    font-size: 15px; font-weight:700; line-height:1.6; text-align:center;
+  }
+  .transcript-box .w-ok{ color: var(--green-correct-dark); }
+  .transcript-box .w-bad{ color: var(--vermelho); text-decoration: underline wavy var(--vermelho); }
+  .attempt-tag{
+    font-size:11px; text-transform:uppercase; font-weight:800;
+    color: var(--text-light); display:block; margin-bottom:2px;
+  }
+
+  /* TELA DE EXPLICAÇÃO + DEMO */
+  .intro-card{
+    background: var(--card); border: 2px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px 16px;
+    animation: popIn .3s ease; display:flex; flex-direction:column; gap:10px;
+  }
+  .intro-tag{
+    align-self:center; background: var(--azul-claro); color: var(--text);
+    font-size: 12px; font-weight: 800; text-transform: uppercase;
+    letter-spacing:.5px; border-radius: 999px; padding: 4px 12px;
+  }
+  .intro-card h2{ font-size: 20px; margin: 2px 0 0; text-align:center; text-transform: lowercase; }
+  .intro-desc{ font-size: 14px; color: var(--text-light); line-height:1.55; text-align:center; margin:0; }
+  .intro-pts{ text-align:center; font-size:13px; font-weight:800; color: var(--laranja-escuro); }
+  .demo-stage{
+    position: relative; background: var(--bg); border: 2px dashed var(--border);
+    border-radius: 14px; padding: 12px 10px 16px; min-height: 165px; overflow: hidden;
+  }
+  .demo-caption{
+    font-size: 11px; font-weight:800; text-transform: uppercase; letter-spacing:.4px;
+    color: var(--text-light); text-align:center; margin-bottom: 8px;
+  }
+  .demo-row{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:8px; }
+  .demo-chip{
+    font-size: 12px; font-weight:700; background: var(--laranja-escuro);
+    color:#fff; border-radius: 999px; padding: 5px 11px;
+    border: 2px solid var(--laranja-dark); transition: opacity .2s ease, transform .15s ease;
+  }
+  .demo-chip.used{ opacity:.22; }
+  .demo-chip.tap{ transform: scale(.88); }
+  .demo-line{
+    min-height: 34px; background:#F3F4F6; border:2px dashed #D1D5DB;
+    border-radius: 10px; display:flex; flex-wrap:wrap; gap:4px;
+    justify-content:center; align-items:center; padding:5px; font-size:12px;
+  }
+  .demo-line .demo-chip{ font-size:12px; }
+  .demo-blank{
+    display:inline-block; min-width:44px; background:#EEE; border-bottom:3px solid #CCC;
+    border-radius:6px; padding:1px 7px; font-size:12px; font-weight:800; color: var(--text-light);
+  }
+  .demo-blank.done{ background: var(--laranja-escuro); color:#fff; border-bottom-color: var(--laranja-dark); }
+  .demo-sentence{ font-size: 13px; font-weight:700; text-align:center; line-height:1.9; }
+  .demo-box{
+    display:inline-flex; width:20px; height:26px; background:#E5E7EB; border:2px solid #D1D5DB;
+    border-radius:5px; align-items:center; justify-content:center; font-size:12px; font-weight:800;
+    margin:0 1px;
+  }
+  .demo-box.done{ background: var(--laranja-escuro); color:#fff; border-color: var(--laranja-dark); }
+  .demo-mic{
+    width:52px; height:52px; border-radius:999px; background: var(--vermelho);
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:24px; margin: 6px auto; border: none;
+  }
+  .demo-mic.tap{ background: var(--green-correct); transform: scale(1.08); }
+  .demo-transcript{ font-size:12px; font-weight:700; text-align:center; margin-top:6px; min-height:18px; }
+  .demo-transcript .bad{ color: var(--vermelho); text-decoration: underline wavy var(--vermelho); }
+  .demo-transcript .ok{ color: var(--green-correct-dark); }
+  .finger{
+    position: absolute; font-size: 26px; left: 50%; top: 75%;
+    transition: left .45s cubic-bezier(.4,0,.2,1), top .45s cubic-bezier(.4,0,.2,1), transform .15s ease;
+    pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); z-index: 4;
+  }
+  .finger.tap{ transform: scale(.78) translateY(-3px); }
+
+  @keyframes popIn{ from{ opacity:0; transform: translateY(8px); } to{ opacity:1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce){ *{ animation: none !important; } }
+</style>
+</head>
+<body>
+
+<div id="page">
+  <div id="topbar"></div>
+  <main id="content"></main>
+</div>
+
+<script>
+/* =========================================================
+   TEMA: LES LÉGUMES  —  7 ATIVIDADES · 100 PONTOS
+   ========================================================= */
+
+/* ---------- ATIVIDADE 1 — Montar a tradução em português ---------- */
+const act1Data = [
+  { fr:"À la cantine, Lucas mange du brocoli et des petits pois.",
+    pt:"Na cantina, Lucas come brócolis e ervilhas." },
+  { fr:"Dans la cuisine, maman coupe de la tomate et de l'oignon.",
+    pt:"Na cozinha, a mamãe corta tomate e cebola." },
+  { fr:"Le soir, mon père prépare de la courge et des épinards.",
+    pt:"À noite, meu pai prepara abóbora e espinafre." },
+  { fr:"Dans son assiette, Lucas met de la carotte et de l'ail.",
+    pt:"Em seu prato, Lucas coloca cenoura e alho." },
+  { fr:"Mon grand-père achète du chou vert et de la laitue.",
+    pt:"Meu avô compra couve e alface." }
+];
+
+/* ---------- ATIVIDADE 2 — Ouvir + montar a frase em francês ---------- */
+const act2Data = [
+  { fr:"Ma grand-mère ajoute de l'ail et des carottes pour la soupe.",
+    pt:"Minha avó adiciona alho e cenouras para a sopa." },
+  { fr:"Dans la cuisine, ma sœur coupe du concombre et de la tomate pour la famille.",
+    pt:"Na cozinha, minha irmã corta pepino e tomate para a família." },
+  { fr:"Mon frère achète de l'oignon et des pommes de terre pour la famille.",
+    pt:"Meu irmão compra cebola e batatas para a família." },
+  { fr:"Au restaurant, je commande du maïs et des pommes de terre.",
+    pt:"No restaurante, eu peço milho e batatas." },
+  { fr:"Pour avoir un corps fort, mon cousin choisit du brocoli et des petits pois.",
+    pt:"Para ter um corpo forte, meu primo escolhe brócolis e ervilhas." }
+];
+
+/* ---------- ATIVIDADE 3 — Partitivos (2 lacunas) + tradução ---------- */
+const PART = ["du","de la","de l'","des"];
+const act3Data = [
+  { template:"Le matin, ma sœur mange [1] tomate et [2] persil.",
+    frFull:"Le matin, ma sœur mange de la tomate et du persil.",
+    b1:{ options:PART, correct:"de la" }, b2:{ options:PART, correct:"du" },
+    pt:"De manhã, minha irmã come tomate e salsinha.",
+    ptWrong:["De manhã, minha irmã come tomate e cebolinha.",
+             "À noite, minha irmã come tomate e salsinha."] },
+  { template:"Pendant les vacances en France, nous mangeons [1] chou-fleur et [2] courge.",
+    frFull:"Pendant les vacances en France, nous mangeons du chou-fleur et de la courge.",
+    b1:{ options:PART, correct:"du" }, b2:{ options:PART, correct:"de la" },
+    pt:"Durante as férias na França, comemos couve-flor e abóbora.",
+    ptWrong:["Durante as férias na França, comemos couve-flor e cenoura.",
+             "Durante as férias na Itália, comemos couve-flor e abóbora."] },
+  { template:"Chez son amie, Sophie coupe [1] carotte et [2] concombre.",
+    frFull:"Chez son amie, Sophie coupe de la carotte et du concombre.",
+    b1:{ options:PART, correct:"de la" }, b2:{ options:PART, correct:"du" },
+    pt:"Na casa de sua amiga, Sophie corta cenoura e pepino.",
+    ptWrong:["Na casa de sua amiga, Sophie come cenoura e pepino.",
+             "Na casa de seu amigo, Sophie corta cenoura e alface."] },
+  { template:"À la plage, nous partageons [1] maïs et [2] petits pois avec nos cousins.",
+    frFull:"À la plage, nous partageons du maïs et des petits pois avec nos cousins.",
+    b1:{ options:PART, correct:"du" }, b2:{ options:PART, correct:"des" },
+    pt:"Na praia, compartilhamos milho e ervilhas com nossos primos.",
+    ptWrong:["Na praia, compartilhamos milho e ervilhas com nossos avós.",
+             "Na cantina, compartilhamos milho e ervilhas com nossos primos."] },
+  { template:"Dans la cuisine, mon père utilise [1] ail et [2] épinards frais.",
+    frFull:"Dans la cuisine, mon père utilise de l'ail et des épinards frais.",
+    b1:{ options:PART, correct:"de l'" }, b2:{ options:PART, correct:"des" },
+    pt:"Na cozinha, meu pai usa alho e espinafre fresco.",
+    ptWrong:["Na cozinha, meu pai usa cebola e espinafre fresco.",
+             "Na cozinha, meu avô usa alho e espinafre fresco."] }
+];
+
+/* ---------- ATIVIDADE 4 — Montar o legume (teclado virtual) + tradução ---------- */
+const act4Data = [
+  { template:"L'après-midi, Lucas goûte du chou vert et de la [W].",
+    frFull:"L'après-midi, Lucas goûte du chou vert et de la laitue.",
+    word:"laitue",
+    pt:"À tarde, Lucas prova couve e alface.",
+    ptWrong:["À tarde, Lucas prova couve e cenoura.","De manhã, Lucas prova couve e alface."] },
+  { template:"Maman prend de la [W] et de l'oignon pour le repas.",
+    frFull:"Maman prend de la courge et de l'oignon pour le repas.",
+    word:"courge",
+    pt:"A mamãe pega abóbora e cebola para a refeição.",
+    ptWrong:["A mamãe pega abóbora e alho para a refeição.","O papai pega abóbora e cebola para a refeição."] },
+  { template:"Le soir, mon grand-père utilise de l'[W] et des petits pois pour la soupe.",
+    frFull:"Le soir, mon grand-père utilise de l'oignon et des petits pois pour la soupe.",
+    word:"oignon",
+    pt:"À noite, meu avô usa cebola e ervilhas para a sopa.",
+    ptWrong:["À noite, minha avó usa cebola e ervilhas para a sopa.","À noite, meu avô usa cebola e batatas para a sopa."] },
+  { template:"Dans un beau village, ma grand-mère prépare de la laitue et des [W].",
+    frFull:"Dans un beau village, ma grand-mère prépare de la laitue et des carottes.",
+    word:"carottes",
+    pt:"Em uma bela vila, minha avó prepara alface e cenouras.",
+    ptWrong:["Em uma bela vila, minha avó prepara alface e abóbora.","Em uma bela cidade, minha avó prepara alface e cenouras."] },
+  { template:"Pour la santé, mon cousin mange des épinards et du [W].",
+    frFull:"Pour la santé, mon cousin mange des épinards et du concombre.",
+    word:"concombre",
+    pt:"Para a saúde, meu primo come espinafre e pepino.",
+    ptWrong:["Para a saúde, meu primo come espinafre e milho.","Para a saúde, minha prima come espinafre e pepino."] }
+];
+
+/* ---------- ATIVIDADE 5 — Lacuna 1 (escolher) + lacuna 2 legume (montar) + tradução ---------- */
+const act5Data = [
+  { template:"Le soir, ma [LC] préfère de la tomate et de l'[W].",
+    frFull:"Le soir, ma sœur préfère de la tomate et de l'ail.",
+    lcWord:"sœur", lcOptions:["sœur","mère","tante"], word:"ail",
+    pt:"À noite, minha irmã prefere tomate e alho.",
+    ptWrong:["À noite, minha irmã prefere tomate e cebola.","De manhã, minha irmã prefere tomate e alho."] },
+  { template:"Dans son [LC], mon frère met du [W] et des petits pois.",
+    frFull:"Dans son assiette, mon frère met du maïs et des petits pois.",
+    lcWord:"assiette", lcOptions:["assiette","verre","sac"], word:"maïs",
+    pt:"Em seu prato, meu irmão coloca milho e ervilhas.",
+    ptWrong:["Em seu prato, meu irmão coloca milho e batatas.","Em seu prato, minha irmã coloca milho e ervilhas."] },
+  { template:"À la [LC], Sophie partage du [W] et de la ciboulette avec nous.",
+    frFull:"À la cantine, Sophie partage du persil et de la ciboulette avec nous.",
+    lcWord:"cantine", lcOptions:["cantine","piscine","cuisine"], word:"persil",
+    pt:"Na cantina, Sophie compartilha salsinha e cebolinha conosco.",
+    ptWrong:["Na cozinha, Sophie compartilha salsinha e cebolinha conosco.","Na cantina, Sophie compartilha alface e cebolinha conosco."] }
+];
+
+/* ---------- ATIVIDADE 6 — Montar partitivo + legume, depois montar a tradução ---------- */
+const act6Data = [
+  { template:"Pendant l'été, nous coupons [W] et du concombre.",
+    frFull:"Pendant l'été, nous coupons de la courge et du concombre.",
+    word:"de la courge",
+    pt:"Durante o verão, cortamos abóbora e pepino." },
+  { template:"Mon père veut [W] et des pommes de terre pour la grande soupe.",
+    frFull:"Mon père veut du chou-fleur et des pommes de terre pour la grande soupe.",
+    word:"du chou-fleur",
+    pt:"Meu pai quer couve-flor e batatas para a grande sopa." },
+  { template:"Dans le village, ma grand-mère achète [W] et du persil.",
+    frFull:"Dans le village, ma grand-mère achète de la tomate et du persil.",
+    word:"de la tomate",
+    pt:"Na vila, minha avó compra tomate e salsinha." }
+];
+
+/* ---------- ATIVIDADE 7 — Falar em francês (microfone) + tradução ---------- */
+const act7Data = [
+  { fr:"À la cantine, je mange du brocoli avec mon ami.",
+    pt:"Na cantina, eu como brócolis com meu amigo.",
+    ptWrong:["Na cantina, eu como brócolis com meu irmão.","Na cozinha, eu como brócolis com meu amigo."] },
+  { fr:"Dans la cuisine, maman coupe de la tomate pour le repas.",
+    pt:"Na cozinha, a mamãe corta tomate para a refeição.",
+    ptWrong:["Na cozinha, a mamãe corta cebola para a refeição.","Na cantina, a mamãe corta tomate para a refeição."] },
+  { fr:"Le soir, mon père ajoute de l'ail dans la grande soupe.",
+    pt:"À noite, meu pai adiciona alho na grande sopa.",
+    ptWrong:["À noite, meu pai adiciona alho na pequena sopa.","De manhã, meu pai adiciona alho na grande sopa."] },
+  { fr:"Pour la famille, mon frère prépare des pommes de terre.",
+    pt:"Para a família, meu irmão prepara batatas.",
+    ptWrong:["Para a família, meu irmão prepara cenouras.","Para a família, minha irmã prepara batatas."] }
+];
+
+/* =========================================================
+   CONFIGURAÇÃO DAS ATIVIDADES
+   ========================================================= */
+const ACTS = [
+  { n:1, data:act1Data, pts:11,  per:2.2,
+    title:"traduza clicando nas palavras",
+    desc:"Leia (e ouça) a frase em francês e monte a tradução em português clicando nas palavras embaralhadas. Clique numa palavra já colocada para devolvê-la.",
+    demo:"assemblePT" },
+  { n:2, data:act2Data, pts:13,  per:2.6,
+    title:"ouça e monte em francês",
+    desc:"Ouça o áudio, leia a frase em português e monte a frase em francês clicando nas palavras. Cada palavra clicada também é falada em francês.",
+    demo:"assembleFR" },
+  { n:3, data:act3Data, pts:12,  per:2.4,
+    title:"partitivos: du, de la, de l', des",
+    desc:"Ouça a frase, escolha o partitivo da lacuna 1 e da lacuna 2 e depois escolha a tradução correta entre 3 opções.",
+    demo:"partitivo" },
+  { n:4, data:act4Data, pts:12,  per:2.4,
+    title:"monte o legume que falta",
+    desc:"Ouça o áudio e escreva o legume que falta usando o teclado virtual (só aparecem as letras da palavra). Depois escolha a tradução correta.",
+    demo:"letras" },
+  { n:5, data:act5Data, pts:12,  per:4,
+    title:"escolha + monte + traduza",
+    desc:"Ouça a frase, escolha a palavra da lacuna 1, monte o legume da lacuna 2 letra por letra e depois escolha a tradução.",
+    demo:"escolhaLetras" },
+  { n:6, data:act6Data, pts:18,  per:6,
+    title:"partitivo + legume e tradução montada",
+    desc:"Ouça o áudio e monte a lacuna completa (partitivo + legume) letra por letra. Depois monte a tradução em português clicando nas palavras. Vale mais pontos!",
+    demo:"letrasLongas" },
+  { n:7, data:act7Data, pts:22,  per:5.5,
+    title:"fale em francês no microfone",
+    desc:"Ouça a frase, clique no microfone e fale em francês. Você tem 3 chances e vale a melhor tentativa — as palavras erradas ficam em vermelho. Depois escolha a tradução. Vale mais pontos!",
+    demo:"microfone" }
+];
+
+/* =========================================================
+   ESTADO GLOBAL
+   ========================================================= */
+const state = {
+  screen: 'home',       // home | intro | game | actComplete | final
+  act: 0,               // índice 0..6
+  qIndex: 0,
+  totalScore: 0,
+  actScores: [0,0,0,0,0,0,0],
+  audioSpeed: 1,
+  q: null               // estado da questão atual
+};
+
+const TOTAL_Q = ACTS.reduce((a,c)=>a+c.data.length,0);
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function formatScore(n){
+  const r = Math.round(n*10)/10;
+  return Number.isInteger(r) ? String(r) : r.toFixed(1);
+}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function jsStr(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+/* =========================================================
+   ÁUDIO — efeitos + fala em francês
+   ========================================================= */
+const SOUND_FILES = {
+  click:'click.mp3', ok:'ok.mp3', falha:'falha.mp3',
+  level:'level.mp3', levelfail:'levelfail.mp3',
+  win:'win01.mp3', losing:'losing.mp3'
+};
+function playSound(name){
+  try{
+    const src = SOUND_FILES[name]; if(!src) return;
+    const a = new Audio(src); a.volume = 0.85; a.play().catch(()=>{});
+  }catch(e){}
+}
+
+let frVoice = null;
+function pickFrenchVoice(){
+  try{
+    const vs = window.speechSynthesis.getVoices() || [];
+    frVoice = vs.find(v=>/^fr[-_]FR/i.test(v.lang)) || vs.find(v=>/^fr/i.test(v.lang)) || null;
+  }catch(e){}
+}
+if('speechSynthesis' in window){
+  pickFrenchVoice();
+  window.speechSynthesis.onvoiceschanged = pickFrenchVoice;
+}
+function speakFR(text, rateOverride){
+  try{
+    if(!('speechSynthesis' in window) || !text) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'fr-FR';
+    if(frVoice) u.voice = frVoice;
+    u.rate = rateOverride || state.audioSpeed;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+function stopSpeech(){ try{ window.speechSynthesis.cancel(); }catch(e){} }
+function updateAudioSpeed(val){
+  state.audioSpeed = parseFloat(val);
+  const el = document.getElementById('speed-val');
+  if(el) el.innerText = state.audioSpeed.toFixed(1) + 'x';
+}
+function renderAudioControls(text, label){
+  return `
+    <div class="audio-controls">
+      <button class="audio-btn" onclick="speakFR('${jsStr(text)}')">🔊 ${label || 'ouvir frase'}</button>
+      <div class="speed-control">
+        <div class="speed-label"><span>Velocidade</span><span id="speed-val">${state.audioSpeed.toFixed(1)}x</span></div>
+        <input type="range" class="speed-slider" min="0.5" max="1.5" step="0.1" value="${state.audioSpeed}" oninput="updateAudioSpeed(this.value)">
+      </div>
+    </div>`;
+}
+
+/* =========================================================
+   UTILITÁRIOS DE PALAVRAS
+   ========================================================= */
+function stripPunct(tok){
+  return tok.replace(/^[«»"'¡¿(]+/,'').replace(/[.,!?;:»"()]+$/,'');
+}
+function tokenize(sentence){
+  return sentence.split(/\s+/).filter(Boolean).map(t=>stripPunct(t));
+}
+function capFirst(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+function normalizeSpeech(s){
+  return s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9'\s-]/g,' ')
+    .replace(/['-]/g,' ')
+    .replace(/\s+/g,' ').trim();
+}
+
+/* =========================================================
+   NAVEGAÇÃO
+   ========================================================= */
+function currentAct(){ return ACTS[state.act]; }
+function currentQ(){ return currentAct().data[state.qIndex]; }
+function actMax(i){ return ACTS[i].pts; }
+function actPct(i){ return (state.actScores[i]/actMax(i))*100; }
+
+function startGame(){
+  playSound('click');
+  state.totalScore = 0; state.actScores = [0,0,0,0,0,0,0];
+  state.act = 0; state.qIndex = 0; state.screen = 'intro';
+  render();
+}
+function startAct(){
+  playSound('click');
+  state.qIndex = 0; state.screen = 'game';
+  setupQuestion(); render();
+}
+function nextQuestion(){
+  playSound('click');
+  stopSpeech();
+  state.qIndex++;
+  if(state.qIndex >= currentAct().data.length){
+    state.screen = 'actComplete';
+    playSound(actPct(state.act) >= 70 ? 'level' : 'levelfail');
+    render(); return;
+  }
+  setupQuestion(); render();
+}
+function afterAct(){
+  playSound('click');
+  if(state.act >= ACTS.length-1){
+    state.screen = 'final';
+    playSound(state.totalScore >= 70 ? 'win' : 'losing');
+  } else {
+    state.act++; state.screen = 'intro';
+  }
+  render();
+}
+function resetGame(){
+  playSound('click');
+  state.screen='home'; state.act=0; state.qIndex=0;
+  state.totalScore=0; state.actScores=[0,0,0,0,0,0,0];
+  render();
+}
+function addPoints(p){
+  state.totalScore += p;
+  state.actScores[state.act] += p;
+}
+
+/* =========================================================
+   RENDER PRINCIPAL
+   ========================================================= */
+function render(){
+  clearDemo();
+  renderTopbar();
+  const c = document.getElementById('content');
+  if(state.screen==='home'){ c.innerHTML = homeTemplate(); }
+  else if(state.screen==='intro'){ c.innerHTML = introTemplate(); startDemo(); }
+  else if(state.screen==='game'){ renderQuestion(); }
+  else if(state.screen==='actComplete'){ c.innerHTML = actCompleteTemplate(); }
+  else { c.innerHTML = finalTemplate(); }
+}
+
+function renderTopbar(){
+  const bar = document.getElementById('topbar');
+  let done = 0;
+  for(let i=0;i<state.act;i++) done += ACTS[i].data.length;
+  let label = 'galolingo · les légumes';
+  let pct = 0;
+  if(state.screen==='game'){
+    done += state.qIndex;
+    label = `atividade ${state.act+1} · questão ${state.qIndex+1}/${currentAct().data.length}`;
+    pct = Math.round(done/TOTAL_Q*100);
+  } else if(state.screen==='intro'){
+    label = `atividade ${state.act+1} · como funciona`;
+    pct = Math.round(done/TOTAL_Q*100);
+  } else if(state.screen==='actComplete'){
+    done += currentAct().data.length;
+    label = `atividade ${state.act+1} concluída`;
+    pct = Math.round(done/TOTAL_Q*100);
+  } else if(state.screen==='final'){
+    label = 'prova concluída'; pct = 100;
+  } else {
+    label = 'pronto para começar?';
+  }
+  bar.innerHTML = `
+    <div class="topbar-row">
+      <span class="level-label">${label}</span>
+      <span class="score-badge">🏆 ${formatScore(state.totalScore)}<span class="score-max">/100</span></span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+}
+
+/* =========================================================
+   TELAS: HOME · INTRO · FIM DE ATIVIDADE · FINAL
+   ========================================================= */
+function homeTemplate(){
+  const chips = ACTS.map(a=>`
+    <div class="level-chip"><span class="chip-num">${a.n}</span> ${a.title} <span class="chip-pts">${a.pts} pts</span></div>`).join('');
+  return `
+    <div class="home-card">
+      <img src="images/galo.png" alt="Galo Galolingo" class="mascot-img" onerror="this.style.display='none'">
+      <h1>galolingo</h1>
+      <p class="home-sub">Tema: <strong>LES LÉGUMES</strong>. São 7 atividades e um total de <strong>100 pontos</strong>.</p>
+      <div class="level-preview">${chips}</div>
+    </div>
+    <div class="footer-space"></div>
+    <button class="btn btn-block" onclick="startGame()">começar</button>`;
+}
+
+function introTemplate(){
+  const a = currentAct();
+  return `
+    <div class="intro-card">
+      <span class="intro-tag">atividade ${a.n} de 7</span>
+      <h2>${a.title}</h2>
+      <p class="intro-desc">${a.desc}</p>
+      <p class="intro-pts">${a.data.length} questões · ${a.pts} pontos</p>
+      <div class="demo-stage" id="demoStage">
+        <div class="demo-caption">exemplo</div>
+        <div id="demoBody"></div>
+        <div class="finger" id="finger">👆</div>
+      </div>
+    </div>
+    <div class="footer-space"></div>
+    <button class="btn btn-block" onclick="startAct()">entendi, começar</button>`;
+}
+
+function actCompleteTemplate(){
+  const i = state.act, a = ACTS[i];
+  const pct = actPct(i), passed = pct>=70;
+  const img = passed ? 'images/happygalo.png' : 'images/sadgalo.png';
+  const msg = passed
+    ? 'Muito bem, esse galo está orgulhoso de você!'
+    : 'Esse galo ficou meio apreensivo... vamos treinar mais um pouco!';
+  const last = i === ACTS.length-1;
+  return `
+    <div class="home-card">
+      <img src="${img}" alt="Galo Galolingo" class="mascot-img" onerror="this.style.display='none'">
+      <h1>atividade ${a.n} concluída!</h1>
+      <p class="home-sub">Você fez <strong>${formatScore(state.actScores[i])} / ${a.pts}</strong> pontos nesta atividade (${Math.round(pct)}%).</p>
+      <p class="home-sub">${msg}</p>
+      <p class="home-sub">Pontuação total: <strong>${formatScore(state.totalScore)} / 100</strong></p>
+    </div>
+    <div class="footer-space"></div>
+    <button class="btn btn-block" onclick="afterAct()">${last ? 'ver resultado final' : 'ir para a atividade '+(a.n+1)}</button>`;
+}
+
+function finalTemplate(){
+  const total = state.totalScore, passed = total>=70;
+  const img = passed ? 'images/happygalo.png' : 'images/sadgalo.png';
+  const msg = passed
+    ? 'Parabéns! Esse galo está cantando de alegria — você mandou muito bem em francês! 🎉'
+    : 'Esse galo ficou triste... revise os legumes e os partitivos e tente de novo! 💪';
+  const rows = ACTS.map((a,i)=>`
+    <div class="breakdown-row"><span>${a.n}. ${a.title}</span><span>${formatScore(state.actScores[i])} / ${a.pts}</span></div>`).join('');
+  return `
+    <div class="home-card">
+      <img src="${img}" alt="Galo Galolingo" class="mascot-img" onerror="this.style.display='none'">
+      <h1>resultado final</h1>
+      <p class="final-score">${formatScore(total)}<span> / 100</span></p>
+      <p class="home-sub">${msg}</p>
+      <div class="breakdown">${rows}</div>
+    </div>
+    <div class="footer-space"></div>
+    <button class="btn btn-block" onclick="resetGame()">jogar novamente</button>`;
+}
+
+/* =========================================================
+   MOTOR DA DEMONSTRAÇÃO (dedinho animado)
+   ========================================================= */
+let demoTimers = [];
+function clearDemo(){ demoTimers.forEach(clearTimeout); demoTimers = []; }
+
+function demoMove(sel){
+  const stage = document.getElementById('demoStage');
+  const f = document.getElementById('finger');
+  if(!stage || !f) return;
+  const t = stage.querySelector(sel);
+  if(!t) return;
+  const sr = stage.getBoundingClientRect(), tr = t.getBoundingClientRect();
+  f.style.left = (tr.left - sr.left + tr.width/2 - 4) + 'px';
+  f.style.top  = (tr.top  - sr.top  + tr.height/2 + 2) + 'px';
+}
+function demoTap(step){
+  const stage = document.getElementById('demoStage');
+  const f = document.getElementById('finger');
+  if(!stage) return;
+  if(f){ f.classList.add('tap'); setTimeout(()=>f.classList.remove('tap'), 220); }
+  const t = stage.querySelector(step.sel);
+  if(t){ t.classList.add('tap'); setTimeout(()=>t.classList.remove('tap'), 240); }
+  if(step.type==='append'){
+    const line = stage.querySelector(step.into);
+    if(line){
+      const ph = line.querySelector('.answer-placeholder'); if(ph) ph.remove();
+      const chip = document.createElement('span');
+      chip.className='demo-chip'; chip.textContent = step.text;
+      line.appendChild(chip);
+    }
+    if(t) t.classList.add('used');
+  } else if(step.type==='fill'){
+    const target = stage.querySelector(step.into);
+    if(target){ target.textContent = step.text; target.classList.add('done'); }
+    if(t && step.dim) t.classList.add('used');
+  } else if(step.type==='html'){
+    const target = stage.querySelector(step.into);
+    if(target) target.innerHTML = step.text;
+  }
+}
+function startDemo(){
+  const def = DEMOS[currentAct().demo];
+  if(!def) return;
+  const body = document.getElementById('demoBody');
+  if(!body) return;
+  const run = ()=>{
+    body.innerHTML = def.html;
+    const f = document.getElementById('finger');
+    if(f){ f.style.left='50%'; f.style.top='78%'; }
+    let t = 500;
+    def.steps.forEach(step=>{
+      demoTimers.push(setTimeout(()=>demoMove(step.sel), t));
+      t += 520;
+      demoTimers.push(setTimeout(()=>demoTap(step), t));
+      t += 300;
+    });
+    demoTimers.push(setTimeout(run, t + 1400));
+  };
+  clearDemo();
+  demoTimers.push(setTimeout(run, 150));
+}
+
+const DEMOS = {
+  assemblePT: {
+    html: `
+      <div class="demo-sentence">Lucas mange du brocoli.</div>
+      <div class="demo-line" id="dLine" style="margin-top:8px"><span class="answer-placeholder">monte aqui…</span></div>
+      <div class="demo-row">
+        <span class="demo-chip" id="dc1">brócolis</span>
+        <span class="demo-chip" id="dc2">lucas</span>
+        <span class="demo-chip" id="dc3">come</span>
+      </div>`,
+    steps: [
+      { sel:'#dc2', type:'append', into:'#dLine', text:'Lucas' },
+      { sel:'#dc3', type:'append', into:'#dLine', text:'come' },
+      { sel:'#dc1', type:'append', into:'#dLine', text:'brócolis' }
+    ]
+  },
+  assembleFR: {
+    html: `
+      <div class="demo-sentence">🔊 <em>Sophie prova abóbora.</em></div>
+      <div class="demo-line" id="dLine" style="margin-top:8px"><span class="answer-placeholder">montez la phrase…</span></div>
+      <div class="demo-row">
+        <span class="demo-chip" id="dc1">courge</span>
+        <span class="demo-chip" id="dc2">sophie</span>
+        <span class="demo-chip" id="dc3">de la</span>
+        <span class="demo-chip" id="dc4">goûte</span>
+      </div>`,
+    steps: [
+      { sel:'#dc2', type:'append', into:'#dLine', text:'Sophie' },
+      { sel:'#dc4', type:'append', into:'#dLine', text:'goûte' },
+      { sel:'#dc3', type:'append', into:'#dLine', text:'de la' },
+      { sel:'#dc1', type:'append', into:'#dLine', text:'courge' }
+    ]
+  },
+  partitivo: {
+    html: `
+      <div class="demo-sentence">Maman coupe <span class="demo-blank" id="dB1">1</span> tomate et <span class="demo-blank" id="dB2">2</span> persil.</div>
+      <div class="demo-row" style="margin-top:6px">
+        <span class="demo-chip" id="dc1">du</span>
+        <span class="demo-chip" id="dc2">de la</span>
+        <span class="demo-chip" id="dc3">des</span>
+      </div>
+      <div class="demo-row"><span class="demo-chip" id="dc4">de l'</span><span class="demo-chip" id="dc5">du</span></div>
+      <div class="demo-transcript" id="dT"></div>`,
+    steps: [
+      { sel:'#dc2', type:'fill', into:'#dB1', text:'de la' },
+      { sel:'#dc5', type:'fill', into:'#dB2', text:'du' },
+      { sel:'#dc1', type:'html', into:'#dT', text:'<span class="ok">→ agora escolha a tradução</span>' }
+    ]
+  },
+  letras: {
+    html: `
+      <div class="demo-sentence">Maman prend de la
+        <span class="demo-box" id="dx1"></span><span class="demo-box" id="dx2"></span><span class="demo-box" id="dx3"></span>.
+      </div>
+      <div class="demo-row" style="margin-top:8px">
+        <span class="demo-chip" id="dc1">i</span>
+        <span class="demo-chip" id="dc2">a</span>
+        <span class="demo-chip" id="dc3">l</span>
+      </div>
+      <div class="demo-transcript" id="dT"></div>`,
+    steps: [
+      { sel:'#dc2', type:'fill', into:'#dx1', text:'a', dim:true },
+      { sel:'#dc3', type:'fill', into:'#dx2', text:'i', dim:true },
+      { sel:'#dc1', type:'fill', into:'#dx3', text:'l', dim:true },
+      { sel:'#dc1', type:'html', into:'#dT', text:'<span class="ok">depois escolha a tradução</span>' }
+    ]
+  },
+  escolhaLetras: {
+    html: `
+      <div class="demo-sentence">Ma <span class="demo-blank" id="dB1">1</span> aime de l'<span class="demo-box" id="dx1"></span><span class="demo-box" id="dx2"></span><span class="demo-box" id="dx3"></span>.</div>
+      <div class="demo-row" style="margin-top:6px">
+        <span class="demo-chip" id="dc1">sœur</span>
+        <span class="demo-chip" id="dc2">mère</span>
+      </div>
+      <div class="demo-row">
+        <span class="demo-chip" id="dc3">l</span>
+        <span class="demo-chip" id="dc4">i</span>
+        <span class="demo-chip" id="dc5">a</span>
+      </div>`,
+    steps: [
+      { sel:'#dc1', type:'fill', into:'#dB1', text:'sœur' },
+      { sel:'#dc5', type:'fill', into:'#dx1', text:'a', dim:true },
+      { sel:'#dc4', type:'fill', into:'#dx2', text:'i', dim:true },
+      { sel:'#dc3', type:'fill', into:'#dx3', text:'l', dim:true }
+    ]
+  },
+  letrasLongas: {
+    html: `
+      <div class="demo-sentence">Nous coupons
+        <span class="demo-box" id="dx1"></span><span class="demo-box" id="dx2"></span>
+        <span style="display:inline-block;width:8px"></span>
+        <span class="demo-box" id="dx3"></span><span class="demo-box" id="dx4"></span> …
+      </div>
+      <div class="demo-row" style="margin-top:8px">
+        <span class="demo-chip" id="dc1">l</span>
+        <span class="demo-chip" id="dc2">d</span>
+        <span class="demo-chip" id="dc3">a</span>
+        <span class="demo-chip" id="dc4">e</span>
+      </div>
+      <div class="demo-transcript" id="dT"></div>`,
+    steps: [
+      { sel:'#dc2', type:'fill', into:'#dx1', text:'d', dim:true },
+      { sel:'#dc4', type:'fill', into:'#dx2', text:'e', dim:true },
+      { sel:'#dc1', type:'fill', into:'#dx3', text:'l', dim:true },
+      { sel:'#dc3', type:'fill', into:'#dx4', text:'a', dim:true },
+      { sel:'#dc3', type:'html', into:'#dT', text:'<span class="ok">“de la courge” → depois monte a tradução</span>' }
+    ]
+  },
+  microfone: {
+    html: `
+      <div class="demo-sentence">Je mange du brocoli.</div>
+      <div class="demo-mic" id="dMic">🎤</div>
+      <div class="demo-transcript" id="dT">clique e fale…</div>`,
+    steps: [
+      { sel:'#dMic', type:'html', into:'#dT', text:'<span style="color:#6b7280">ouvindo…</span>' },
+      { sel:'#dMic', type:'html', into:'#dT', text:'<span class="ok">je mange du</span> <span class="bad">brocori</span>' },
+      { sel:'#dMic', type:'html', into:'#dT', text:'<span class="ok">je mange du brocoli</span> · 3/4 palavras ✔' }
+    ]
+  }
+};
+
+/* =========================================================
+   ROTEADOR DE QUESTÕES
+   ========================================================= */
+function setupQuestion(){
+  stopSpeech();
+  const n = currentAct().n;
+  if(n===1) setupAssemble(currentQ().pt);
+  else if(n===2) setupAssemble(currentQ().fr);
+  else if(n===3) setupAct3();
+  else if(n===4) setupAct4();
+  else if(n===5) setupAct5();
+  else if(n===6) setupAct6();
+  else setupAct7();
+}
+function renderQuestion(){
+  const n = currentAct().n;
+  if(n===1) renderAct1();
+  else if(n===2) renderAct2();
+  else if(n===3) renderAct3();
+  else if(n===4) renderAct4();
+  else if(n===5) renderAct5();
+  else if(n===6) renderAct6();
+  else renderAct7();
+}
+
+/* =========================================================
+   COMPONENTE: MONTAR FRASE CLICANDO NAS PALAVRAS
+   ========================================================= */
+function setupAssemble(sentence){
+  const target = tokenize(sentence);
+  const tiles = shuffle(target.map((w,i)=>({ id:i, word:w }))).map(t=>({ id:t.id, word:t.word }));
+  state.q = {
+    phase:'assemble', target, tiles, slots:[], checked:false, correct:false,
+    sentence, tr:null
+  };
+}
+function assembleClickTile(id){
+  const s = state.q; if(s.checked) return;
+  if(s.slots.some(x=>x.id===id)) return;
+  const t = s.tiles.find(x=>x.id===id);
+  playSound('click');
+  s.slots.push(t);
+  if(state.q.speakWords) speakFR(t.word);
+  renderQuestion();
+}
+function assembleRemove(pos){
+  const s = state.q; if(s.checked) return;
+  playSound('click');
+  s.slots.splice(pos,1);
+  renderQuestion();
+}
+function assembleHtml(){
+  const s = state.q;
+  const built = s.slots.map(x=>x.word.toLowerCase()).join(' ');
+  const goal  = s.target.map(x=>x.toLowerCase()).join(' ');
+  let areaCls = 'answer-area';
+  if(s.checked) areaCls += (built===goal ? ' correct' : ' wrong');
+  let inner;
+  if(s.checked && built===goal){
+    inner = `<span style="font-size:16px;font-weight:800;color:var(--green-correct-dark);padding:6px 2px">${esc(s.sentence)}</span>`;
+  } else if(s.slots.length===0){
+    inner = `<span class="answer-placeholder">clique nas palavras abaixo</span>`;
+  } else {
+    inner = s.slots.map((x,i)=>{
+      const w = i===0 ? capFirst(x.word) : x.word;
+      return `<span class="slot-word" onclick="assembleRemove(${i})">${esc(w)}</span>`;
+    }).join('');
+  }
+  const tiles = s.tiles.map(t=>{
+    const used = s.slots.some(x=>x.id===t.id);
+    return `<button class="word-tile ${used||s.checked?'disabled':''}" onclick="assembleClickTile(${t.id})">${esc(t.word.toLowerCase())}</button>`;
+  }).join('');
+  const gab = (s.checked && built!==goal)
+    ? `<div class="gabarito"><strong>Correto:</strong> ${esc(s.sentence)}</div>` : '';
+  return `
+    <div class="${areaCls}">${inner}</div>
+    <p class="chip-label">palavras</p>
+    <div class="chip-row">${tiles}</div>
+    ${gab}`;
+}
+function checkAssemble(pointsIfOk){
+  const s = state.q;
+  const built = s.slots.map(x=>x.word.toLowerCase()).join(' ');
+  const goal  = s.target.map(x=>x.toLowerCase()).join(' ');
+  s.checked = true; s.correct = (built===goal);
+  if(s.correct){ addPoints(pointsIfOk); playSound('ok'); } else { playSound('falha'); }
+  renderQuestion(); renderTopbar();
+}
+function footerBtn(label, onclick, disabled){
+  return `<div class="footer-space"></div>
+    <button class="btn btn-block" ${disabled?'disabled':''} onclick="${onclick}">${label}</button>`;
+}
+
+/* =========================================================
+   ATIVIDADE 1
+   ========================================================= */
+function renderAct1(){
+  const q = currentQ(), s = state.q;
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <p class="instruction">monte a tradução em português</p>
+      ${renderAudioControls(q.fr)}
+      <p class="fr-sentence">${esc(q.fr)}</p>
+      ${assembleHtml()}
+    </div>
+    ${footerBtn(s.checked?'continuar':'verificar',
+      s.checked?'nextQuestion()':'checkAssemble(2.2)',
+      !s.checked && s.slots.length!==s.target.length)}`;
+}
+
+/* =========================================================
+   ATIVIDADE 2
+   ========================================================= */
+function renderAct2(){
+  const q = currentQ(), s = state.q;
+  s.speakWords = true;
+  document.getElementById('content').innerHTML = `
+    <div class="question-card">
+      <p class="instruction">ouça e monte a frase em francês</p>
+      ${renderAudioControls(q.fr)}
+      <p class="pt-sentence">${esc(q.pt)}</p>
+      ${assembleHtml()}
+    </div>
+    ${footerBtn(s.checked?'continuar':'verificar',
+      s.checked?'nextQuestion()':'checkAssemble(2.6)',
+      !s.checked && s.slots.length!==s.target.length)}`;
+}
+
+/* =========================================================
+   ATIVIDADE 3 — partitivos + tradução
+   ========================================================= */
+function setupAct3(){
+  const q = currentQ();
+  state.q = {
+    step:'A',
+    b1: shuffle(q.b1.options), b1Sel:null,
+    b2: shuffle(q.b2.options), b2Sel:null,
+    checkedA:false,
+    tr: shuffle([{text:q.pt,correct:true}, ...q.ptWrong.map(w=>({text:w,correct:false}))]),
+    trSel:null, checkedB:false
+  };
+}
+function blankHtml(num, sel, options, correct, checked){
+  if(sel===null) return `<span class="blank"><span class="blank-num">${num}</span>___</span>`;
+  const w = options[sel];
+  let cls = 'blank blank-filled';
+  if(checked) cls = 'blank ' + (w===correct ? 'blank-correct' : 'blank-wrong');
+  return `<span class="${cls}">${esc(w)}</span>`;
+}
+function selAct3(which,i){
+  const s = state.q; if(s.checkedA) return;
+  playSound('click');
+  const w = which===1 ? s.b1[i] : s.b2[i];
+  speakFR(w);
+  if(which===1) s.b1Sel=i; else s.b2Sel=i;
+  renderQuestion();
+}
+function checkAct3Blanks(){
+  const q = currentQ(), s = state.q;
+  s.checkedA = true;
+  const ok1 = s.b1[s.b1Sel]===q.b1.correct;
+  const ok2 = s.b2[s.b2Sel]===q.b2.correct;
+  if(ok1) addPoints(0.8);
+  if(ok2) addPoints(0.8);
+  playSound(ok1&&ok2?'ok':'falha');
+  renderQuestion(); renderTopbar();
+}
+function goStepB(){ playSound('click'); state.q.step='B'; renderQuestion(); }
+function selTr(i){ const s=state.q; if(s.checkedB) return; playSound('click'); s.trSel=i; renderQuestion(); }
+function checkTr(points){
+  const s = state.q; s.checkedB = true;
+  if(s.tr[s.trSel].correct){ addPoints(points); playSound('ok'); } else playSound('falha');
+  renderQuestion(); renderTopbar();
+}
+function translationHtml(){
+  const s = state.q;
+  return `<div class="options-grid">` + s.tr.map((o,i)=>{
+    let cls='option-card';
+    if(s.checkedB){ if(o.correct) cls+=' correct'; else if(i===s.trSel) cls+=' wrong'; }
+    else if(i===s.trSel) cls+=' selected';
+    return `<button class="${cls}" ${s.checkedB?'disabled':''} onclick="selTr(${i})">${esc(o.text)}</button>`;
+  }).join('') + `</div>`;
+}
+function renderAct3(){
+  const q = currentQ(), s = state.q, c = document.getElementById('content');
+  if(s.step==='A'){
+    const sent = q.template
+      .replace('[1]', blankHtml(1, s.b1Sel, s.b1, q.b1.correct, s.checkedA))
+      .replace('[2]', blankHtml(2, s.b2Sel, s.b2, q.b2.correct, s.checkedA));
+    const row = (which, opts, sel, correct)=> opts.map((w,i)=>{
+      let cls='chip-option';
+      if(s.checkedA){ if(w===correct) cls+=' correct'; else if(i===sel) cls+=' wrong'; }
+      else if(i===sel) cls+=' selected';
+      return `<button class="${cls}" ${s.checkedA?'disabled':''} onclick="selAct3(${which},${i})">${esc(w)}</button>`;
+    }).join('');
+    c.innerHTML = `
+      <div class="question-card">
+        <p class="instruction">etapa a · escolha os partitivos</p>
+        ${renderAudioControls(q.frFull)}
+        <p class="fr-sentence">${sent}</p>
+        <p class="chip-label">lacuna 1</p>
+        <div class="chip-row">${row(1,s.b1,s.b1Sel,q.b1.correct)}</div>
+        <p class="chip-label">lacuna 2</p>
+        <div class="chip-row">${row(2,s.b2,s.b2Sel,q.b2.correct)}</div>
+      </div>
+      ${footerBtn(s.checkedA?'continuar':'verificar lacunas',
+        s.checkedA?'goStepB()':'checkAct3Blanks()',
+        !s.checkedA && (s.b1Sel===null || s.b2Sel===null))}`;
+  } else {
+    c.innerHTML = `
+      <div class="question-card">
+        <p class="instruction">etapa b · escolha a tradução</p>
+        ${renderAudioControls(q.frFull)}
+        <p class="fr-sentence">${esc(q.frFull)}</p>
+        ${translationHtml()}
+      </div>
+      ${footerBtn(s.checkedB?'próxima questão':'verificar tradução',
+        s.checkedB?'nextQuestion()':'checkTr(0.8)',
+        !s.checkedB && s.trSel===null)}`;
+  }
+}
+
+/* =========================================================
+   COMPONENTE: TECLADO VIRTUAL DE LETRAS
+   ========================================================= */
+function makeLetterState(word){
+  const chars = word.split('');
+  const tiles = shuffle(chars.map((ch,i)=>({id:i, ch}))).filter(t=>t.ch!==' ');
+  return { word, chars, slots:new Array(chars.length).fill(null), tiles };
+}
+function letterBoxesHtml(L, checked, isCorrect){
+  let html = `<span class="word-target-box">`;
+  for(let i=0;i<L.chars.length;i++){
+    if(L.chars[i]===' '){ html += `<span class="letter-box space"></span>`; continue; }
+    const slot = L.slots[i];
+    let cls = 'letter-box';
+    if(slot) cls += ' filled';
+    if(checked) cls = 'letter-box ' + (isCorrect ? 'correct' : 'wrong');
+    html += `<span class="${cls}" onclick="removeLetter(${i})">${slot?esc(slot.ch):''}</span>`;
+  }
+  return html + `</span>`;
+}
+function letterTilesHtml(L, checked){
+  return L.tiles.map(t=>{
+    const used = L.slots.some(s=>s && s.id===t.id);
+    return `<button class="letter-tile ${used||checked?'disabled':''}" onclick="addLetter(${t.id})">${esc(t.ch)}</button>`;
+  }).join('');
+}
+function addLetter(id){
+  const L = state.q.L; if(state.q.checkedA) return;
+  let idx = -1;
+  for(let i=0;i<L.chars.length;i++){
+    if(L.chars[i]===' ') continue;
+    if(L.slots[i]===null){ idx=i; break; }
+  }
+  if(idx===-1) return;
+  playSound('click');
+  L.slots[idx] = L.tiles.find(t=>t.id===id);
+  renderQuestion();
+}
+function removeLetter(i){
+  const L = state.q.L; if(state.q.checkedA) return;
+  if(L.slots[i]){ playSound('click'); L.slots[i]=null; renderQuestion(); }
+}
+function builtWord(L){
+  return L.chars.map((c,i)=> c===' ' ? ' ' : (L.slots[i]?L.slots[i].ch:'·')).join('');
+}
+function lettersFilled(L){
+  return L.chars.every((c,i)=> c===' ' || L.slots[i]!==null);
+}
+
+/* =========================================================
+   ATIVIDADE 4 — montar o legume + tradução
+   ========================================================= */
+function setupAct4(){
+  const q = currentQ();
+  state.q = {
+    step:'A', L: makeLetterState(q.word), checkedA:false, okA:false,
+    tr: shuffle([{text:q.pt,correct:true}, ...q.ptWrong.map(w=>({text:w,correct:false}))]),
+    trSel:null, checkedB:false
+  };
+}
+function checkLetters(points, nextStepFn){
+  const q = currentQ(), s = state.q;
+  s.checkedA = true;
+  s.okA = builtWord(s.L) === q.word;
+  if(s.okA){ addPoints(points); playSound('ok'); } else playSound('falha');
+  renderQuestion(); renderTopbar();
+}
+function renderAct4(){
+  const q = currentQ(), s = state.q, c = document.getElementById('content');
+  if(s.step==='A'){
+    const sent = q.template.replace('[W]', letterBoxesHtml(s.L, s.checkedA, s.okA));
+    const gab = (s.checkedA && !s.okA) ? `<div class="gabarito"><strong>Correto:</strong> ${esc(q.frFull)}</div>` : '';
+    c.innerHTML = `
+      <div class="question-card">
+        <p class="instruction">ouça e monte o legume que falta</p>
+        ${renderAudioControls(q.frFull)}
+        <p class="fr-sentence">${sent}</p>
+        <p class="chip-label">teclado</p>
+        <div class="chip-row">${letterTilesHtml(s.L, s.checkedA)}</div>
+        ${gab}
+      </div>
+      ${footerBtn(s.checkedA?'continuar para tradução':'verificar palavra',
+        s.checkedA?'goStepB()':'checkLetters(1.4)',
+        !s.checkedA && !lettersFilled(s.L))}`;
+  } else {
+    c.innerHTML = `
+      <div class="question-card">
+        <p class="instruction">escolha a tradução</p>
+        ${renderAudioControls(q.frFull)}
+        <p class="fr-sentence">${esc(q.frFull)}</p>
+        ${translationHtml()}
+      </div>
+      ${footerBtn(s.checkedB?'próxima questão':'verificar tradução',
+        s.checkedB?'nextQuestion()':'checkTr(1)',
+        !s.checkedB && s.trSel===null)}`;
+  }
+}
+
+/* =========================================================
+   ATIVIDADE 5 — escolher lacuna 1 + montar legume + tradução
+   ========================================================= */
+function setupAct5(){
+  const q = currentQ();
+  state.q = {
+    step:'A', lc: shuffle(q.lcOptions), lcSel:null,
+    L: makeLetterState(q.word), checkedA:false, okLC:false, okA:false,
+    tr: shuffle([{text:q.pt,correct:true}, ...q.ptWrong.map(w=>({text:w,correct:false}))]),
+    trSel:null, checkedB:false
+  };
+}
+function selAct5LC(i){
+  const s = state.q; if(s.checkedA) return;
+  playSound('click'); speakFR(s.lc[i]); s.lcSel=i; renderQuestion();
+}
+function checkAct5(){
+  const q = currentQ(), s = state.q;
+  s.checkedA = true;
+  s.okLC = s.lc[s.lcSel]===q.lcWord;
+  s.okA  = builtWord(s.L)===q.word;
+  if(s.okLC) addPoints(1.2);
+  if(s.okA)  addPoints(1.4);
+  playSound(s.okLC && s.okA ? 'ok' : 'falha');
+  renderQuestion(); renderTopbar();
+}
+function renderAct5(){
+  const q = currentQ(), s = state.q, c = document.getElementById('content');
+  if(s.step==='A'){
+    let lcHtml;
+    if(s.lcSel===null) lcHtml = `<span class="blank"><span class="blank-num">1</span>___</span>`;
+    else {
+      const w = s.lc[s.lcSel];
+      let cls = 'blank blank-filled';
+      if(s.checkedA) cls = 'blank ' + (w===q.lcWord ? 'blank-correct':'blank-wrong');
+      lcHtml = `<span class="${cls}">${esc(w)}</span>`;
+    }
+    const sent = q.template.replace('[LC]', lcHtml).replace('[W]', letterBoxesHtml(s.L, s.checkedA, s.okA));
+    const lcBtns = s.lc.map((w,i)=>{
+      let cls='chip-option';
+      if(s.checkedA){ if(w===q.lcWord) cls+=' correct'; else if(i===s.lcSel) cls+=' wrong'; }
+      else if(i===s.lcSel) cls+=' selected';
+      return `<button class="${cls}" ${s.checkedA?'disabled':''} onclick="selAct5LC(${i})">${esc(w)}</button>`;
+    }).join('');
+    const gab = (s.checkedA && (!s.okLC || !s.okA)) ? `<div class="gabarito"><strong>Correto:</strong> ${esc(q.frFull)}</div>` : '';
+    c.innerHTML = `
+      <div class="question-card">
+        <p class="instruction">lacuna 1: escolha · lacuna 2: monte</p>
+        ${renderAudioControls(q.frFull)}
+        <p class="fr-sentence">${sent}</p>
+        <p class="chip-label">1. escolha a palavra</p>
+        <div class="chip-row">${lcBtns}</div>
+        <p class="chip-label">2. monte o legume</p>
+        <div class="chip-row">${letterTilesHtml(s.L, s.checkedA)}</div>
+        ${gab}
+      </div>
+      ${footerBtn(s.checkedA?'continuar para tradução':'verificar lacunas',
+        s.checkedA?'goStepB()':'checkAct5()',
+        !s.checkedA && (s.lcSel===null || !lettersFilled(s.L)))}`;
+  } else {
+    c.innerHTML = `
+      <div class="question-card">
+        <p class="instruction">escolha a tradução</p>
+        ${renderAudioControls(q.frFull)}
+        <p class="fr-sentence">${esc(q.frFull)}</p>
+        ${translationHtml()}
+      </div>
+      ${footerBtn(s.checkedB?'próxima questão':'verificar tradução',
+        s.checkedB?'nextQuestion()':'checkTr(1.4)',
+        !s.checkedB && s.trSel===null)}`;
+  }
+}
+
+/* =========================================================
+   ATIVIDADE 6 — montar partitivo + legume, depois montar tradução
+   ========================================================= */
+function setupAct6(){
+  const q = currentQ();
+  const target = tokenize(q.pt);
+  state.q = {
+    step:'A', L: makeLetterState(q.word), checkedA:false, okA:false,
+    target, tiles: shuffle(target.map((w,i)=>({id:i, word:w}))),
+    slots:[], checked:false, sentence:q.pt
+  };
+}
+function checkAct6Letters(){
+  const q = currentQ(), s = state.q;
+  s.checkedA = true;
+  s.okA = builtWord(s.L)===q.word;
+  if(s.okA){ addPoints(3); playSound('ok'); } else playSound('falha');
+  renderQuestion(); renderTopbar();
+}
+function renderAct6(){
+  const q = currentQ(), s = state.q, c = document.getElementById('content');
+  if(s.step==='A'){
+    const sent = q.template.replace('[W]', letterBoxesHtml(s.L, s.checkedA, s.okA));
+    const gab = (s.checkedA && !s.okA) ? `<div class="gabarito"><strong>Correto:</strong> ${esc(q.frFull)}</div>` : '';
+    c.innerHTML = `
+      <div class="question-card">
+        <p class="instruction">monte o partitivo + o legume</p>
+        ${renderAudioControls(q.frFull)}
+        <p class="fr-sentence">${sent}</p>
+        <p class="chip-label">teclado</p>
+        <div class="chip-row">${letterTilesHtml(s.L, s.checkedA)}</div>
+        ${gab}
+      </div>
+      ${footerBtn(s.checkedA?'continuar para tradução':'verificar lacuna',
+        s.checkedA?'goStepB()':'checkAct6Letters()',
+        !s.checkedA && !lettersFilled(s.L))}`;
+  } else {
+    c.innerHTML = `
+      <div class="question-card">
+        <p class="instruction">monte a tradução em português</p>
+        ${renderAudioControls(q.frFull)}
+        <p class="fr-sentence">${esc(q.frFull)}</p>
+        ${assembleHtml()}
+      </div>
+      ${footerBtn(s.checked?'próxima questão':'verificar tradução',
+        s.checked?'nextQuestion()':'checkAssemble(3)',
+        !s.checked && s.slots.length!==s.target.length)}`;
+  }
+}
+
+/* =========================================================
+   ATIVIDADE 7 — microfone (reconhecimento de fala) + tradução
+   ========================================================= */
+const SR_API = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+
+function setupAct7(){
+  const q = currentQ();
+  state.q = {
+    step:'A', attempts:[], listening:false, bestRatio:0, finishedA:false, error:'',
+    tr: shuffle([{text:q.pt,correct:true}, ...q.ptWrong.map(w=>({text:w,correct:false}))]),
+    trSel:null, checkedB:false
+  };
+}
+function scoreTranscript(target, said){
+  const tw = normalizeSpeech(target).split(' ').filter(Boolean);
+  const sw = normalizeSpeech(said).split(' ').filter(Boolean);
+  const pool = [...tw];
+  const marks = sw.map(w=>{
+    const i = pool.indexOf(w);
+    if(i>-1){ pool.splice(i,1); return {w, ok:true}; }
+    return {w, ok:false};
+  });
+  const hits = marks.filter(m=>m.ok).length;
+  return { marks, ratio: tw.length ? hits/tw.length : 0, hits, total: tw.length };
+}
+function startMic(){
+  const s = state.q;
+  if(s.listening || s.finishedA) return;
+  if(!SR_API){
+    s.error = 'Seu navegador não reconhece voz. Use o Chrome para esta atividade.';
+    renderQuestion(); return;
+  }
+  stopSpeech();
+  try{
+    recognition = new SR_API();
+    recognition.lang = 'fr-FR';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = (e)=>{
+      const said = e.results[0][0].transcript;
+      registerAttempt(said);
+    };
+    recognition.onerror = (e)=>{
+      state.q.listening = false;
+      state.q.error = (e.error==='not-allowed')
+        ? 'Permita o uso do microfone no navegador para continuar.'
+        : 'Não consegui ouvir. Tente de novo.';
+      renderQuestion();
+    };
+    recognition.onend = ()=>{
+      if(state.q && state.q.listening){ state.q.listening=false; renderQuestion(); }
+    };
+    s.listening = true; s.error='';
+    renderQuestion();
+    recognition.start();
+  }catch(err){
+    s.listening=false; s.error='Não foi possível iniciar o microfone.'; renderQuestion();
+  }
+}
+function registerAttempt(said){
+  const q = currentQ(), s = state.q;
+  s.listening = false;
+  const res = scoreTranscript(q.fr, said);
+  s.attempts.push(res);
+  s.bestRatio = Math.max(s.bestRatio, res.ratio);
+  playSound(res.ratio >= 0.8 ? 'ok' : 'falha');
+  if(s.attempts.length>=3) finishMic();
+  else renderQuestion();
+}
+function finishMic(){
+  const s = state.q;
+  if(s.finishedA) return;
+  s.finishedA = true;
+  const pts = Math.round(3.5 * s.bestRatio * 10)/10;
+  if(pts>0) addPoints(pts);
+  s.earned = pts;
+  playSound(s.bestRatio>=0.8 ? 'ok' : 'falha');
+  renderQuestion(); renderTopbar();
+}
+function renderAct7(){
+  const q = currentQ(), s = state.q, c = document.getElementById('content');
+  if(s.step==='A'){
+    const left = 3 - s.attempts.length;
+    const hearts = [0,1,2].map(i=>`<span class="heart ${i<s.attempts.length?'used':''}">❤️</span>`).join('');
+    const attemptsHtml = s.attempts.map((a,i)=>`
+      <div class="transcript-box">
+        <span class="attempt-tag">tentativa ${i+1} · ${a.hits}/${a.total} palavras</span>
+        ${a.marks.map(m=>`<span class="${m.ok?'w-ok':'w-bad'}">${esc(m.w)}</span>`).join(' ')}
+      </div>`).join('');
+    const errHtml = s.error ? `<div class="gabarito">${esc(s.error)}</div>` : '';
+    const resultHtml = s.finishedA
+      ? `<div class="gabarito ${s.bestRatio>=0.7?'ok':''}"><strong>Melhor tentativa:</strong> ${Math.round(s.bestRatio*100)}% · ${formatScore(s.earned)} de 3.5 pontos</div>`
+      : '';
+    const canSkip = s.attempts.length>0 && !s.finishedA;
+    c.innerHTML = `
+      <div class="question-card">
+        <p class="instruction">ouça e depois fale em francês</p>
+        ${renderAudioControls(q.fr)}
+        <p class="fr-sentence">${esc(q.fr)}</p>
+        <div class="chances">${hearts} <span>${left} chance${left===1?'':'s'}</span></div>
+        <button class="mic-btn ${s.listening?'listening':''}" ${s.finishedA?'disabled':''} onclick="startMic()">🎤</button>
+        <p class="instruction" style="margin:0">${s.listening?'ouvindo…':(s.finishedA?'tentativas encerradas':'clique no microfone e fale')}</p>
+        ${attemptsHtml}
+        ${errHtml}
+        ${resultHtml}
+        ${canSkip?`<button class="btn btn-ghost" style="margin-top:12px" onclick="finishMic()">encerrar e usar a melhor tentativa</button>`:''}
+      </div>
+      ${footerBtn(s.finishedA?'continuar para tradução':'verificar pronúncia',
+        s.finishedA?'goStepB()':'finishMic()',
+        s.attempts.length===0)}`;
+  } else {
+    c.innerHTML = `
+      <div class="question-card">
+        <p class="instruction">escolha a tradução</p>
+        ${renderAudioControls(q.fr)}
+        <p class="fr-sentence">${esc(q.fr)}</p>
+        ${translationHtml()}
+      </div>
+      ${footerBtn(s.checkedB?'próxima questão':'verificar tradução',
+        s.checkedB?'nextQuestion()':'checkTr(2)',
+        !s.checkedB && s.trSel===null)}`;
+  }
+}
+
+/* =========================================================
+   INÍCIO
+   ========================================================= */
+render();
+</script>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>
